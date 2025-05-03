@@ -1,4 +1,4 @@
-package com.example.bluetoothchat.ui
+package com.example.bluetoothchat
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

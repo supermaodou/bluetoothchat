@@ -30,17 +30,17 @@ fun DeviceListScreen(navController: NavController, viewModel: BluetoothViewModel
                 "android.permission.BLUETOOTH_CONNECT"
             ) != android.content.pm.PackageManager.PERMISSION_GRANTED
         ) {
-            snackbarHostState.showSnackbar("Please grant Bluetooth permission")
+            snackbarHostState.showSnackbar("请授予蓝牙权限")
         }
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Select Device") },
+                title = { Text("选择设备") },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "返回")
                     }
                 }
             )
@@ -53,13 +53,13 @@ fun DeviceListScreen(navController: NavController, viewModel: BluetoothViewModel
                 .padding(padding)
         ) {
             Text(
-                text = "Paired Devices",
+                text = "已配对设备",
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.padding(16.dp)
             )
             if (pairedDevices.isEmpty()) {
                 Text(
-                    text = "No paired devices found",
+                    text = "未找到已配对设备",
                     modifier = Modifier.padding(16.dp)
                 )
             } else {
@@ -86,12 +86,12 @@ fun DeviceItem(device: BluetoothDevice, onClick: () -> Unit) {
             ) == android.content.pm.PackageManager.PERMISSION_GRANTED
         ) {
             try {
-                device.name ?: "Unknown Device"
+                device.name ?: "未知设备"
             } catch (e: SecurityException) {
-                "Unknown Device"
+                "未知设备"
             }
         } else {
-            "Unknown Device"
+            "未知设备"
         }
     }
 

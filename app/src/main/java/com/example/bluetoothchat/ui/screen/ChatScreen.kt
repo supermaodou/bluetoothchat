@@ -23,10 +23,10 @@ fun ChatScreen(viewModel: BluetoothViewModel) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Bluetooth Chat") },
+                title = { Text("蓝牙聊天") },
                 actions = {
                     Button(onClick = { viewModel.disconnect() }) {
-                        Text("Disconnect")
+                        Text("断开连接")
                     }
                 }
             )
@@ -40,9 +40,9 @@ fun ChatScreen(viewModel: BluetoothViewModel) {
             // 状态显示
             Text(
                 text = when (state) {
-                    is BluetoothState.Connected -> "Connected to ${(state as BluetoothState.Connected).deviceName}"
+                    is BluetoothState.Connected -> "已连接到 ${(state as BluetoothState.Connected).deviceName}"
                     is BluetoothState.Error -> (state as BluetoothState.Error).message
-                    else -> "Disconnected"
+                    else -> "未连接"
                 },
                 modifier = Modifier.padding(16.dp)
             )
@@ -70,7 +70,7 @@ fun ChatScreen(viewModel: BluetoothViewModel) {
                     value = messageInput,
                     onValueChange = { messageInput = it },
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("Type a message") }
+                    placeholder = { Text("输入消息") }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Button(
@@ -80,7 +80,7 @@ fun ChatScreen(viewModel: BluetoothViewModel) {
                     },
                     enabled = messageInput.isNotBlank() && state is BluetoothState.Connected
                 ) {
-                    Text("Send")
+                    Text("发送")
                 }
             }
         }

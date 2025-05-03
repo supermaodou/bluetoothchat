@@ -17,7 +17,7 @@ import java.util.UUID
 
 class BluetoothService(
     private val bluetoothAdapter: BluetoothAdapter,
-    private val context: Context // Added context for permission checks
+    private val context: Context // 添加上下文以进行权限检查
 ) {
     private val _state = MutableStateFlow<BluetoothState>(BluetoothState.Disconnected)
     val state: StateFlow<BluetoothState> = _state
@@ -33,13 +33,13 @@ class BluetoothService(
     fun startServer() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Check BLUETOOTH_ADVERTISE permission
+                // 检查 BLUETOOTH_ADVERTISE 权限
                 if (ContextCompat.checkSelfPermission(
                         context,
                         "android.permission.BLUETOOTH_ADVERTISE"
                     ) != android.content.pm.PackageManager.PERMISSION_GRANTED
                 ) {
-                    _state.value = BluetoothState.Error("BLUETOOTH_ADVERTISE permission missing")
+                    _state.value = BluetoothState.Error("缺少 BLUETOOTH_ADVERTISE 权限")
                     return@launch
                 }
 
@@ -47,14 +47,14 @@ class BluetoothService(
                 _state.value = BluetoothState.Listening
                 val socket = serverSocket?.accept()
                 this@BluetoothService.socket = socket
-                _state.value = BluetoothState.Connected(socket?.remoteDevice?.name ?: "Unknown")
+                _state.value = BluetoothState.Connected(socket?.remoteDevice?.name ?: "未知设备")
                 serverSocket?.close()
                 serverSocket = null
                 listenForMessages()
             } catch (e: SecurityException) {
-                _state.value = BluetoothState.Error("Permission denied: ${e.message}")
+                _state.value = BluetoothState.Error("权限被拒绝：${e.message}")
             } catch (e: IOException) {
-                _state.value = BluetoothState.Error("Server error: ${e.message}")
+                _state.value = BluetoothState.Error("服务器错误：${e.message}")
             }
         }
     }
@@ -63,24 +63,24 @@ class BluetoothService(
     fun connectToDevice(device: BluetoothDevice) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Check BLUETOOTH_CONNECT permission
+                // 检查 BLUETOOTH_CONNECT 权限
                 if (ContextCompat.checkSelfPermission(
                         context,
                         "android.permission.BLUETOOTH_CONNECT"
                     ) != android.content.pm.PackageManager.PERMISSION_GRANTED
                 ) {
-                    _state.value = BluetoothState.Error("BLUETOOTH_CONNECT permission missing")
+                    _state.value = BluetoothState.Error("缺少 BLUETOOTH_CONNECT 权限")
                     return@launch
                 }
 
                 socket = device.createRfcommSocketToServiceRecord(uuid)
                 socket?.connect()
-                _state.value = BluetoothState.Connected(device.name ?: "Unknown")
+                _state.value = BluetoothState.Connected(device.name ?: "未知设备")
                 listenForMessages()
             } catch (e: SecurityException) {
-                _state.value = BluetoothState.Error("Permission denied: ${e.message}")
+                _state.value = BluetoothState.Error("权限被拒绝：${e.message}")
             } catch (e: IOException) {
-                _state.value = BluetoothState.Error("Connection error: ${e.message}")
+                _state.value = BluetoothState.Error("连接错误：${e.message}")
             }
         }
     }
@@ -89,22 +89,22 @@ class BluetoothService(
     fun sendMessage(message: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                // Check BLUETOOTH_CONNECT permission for socket operations
+                // 检查 BLUETOOTH_CONNECT 权限以进行 socket 操作
                 if (ContextCompat.checkSelfPermission(
                         context,
                         "android.permission.BLUETOOTH_CONNECT"
                     ) != android.content.pm.PackageManager.PERMISSION_GRANTED
                 ) {
-                    _state.value = BluetoothState.Error("BLUETOOTH_CONNECT permission missing")
+                    _state.value = BluetoothState.Error("缺少 BLUETOOTH_CONNECT 权限")
                     return@launch
                 }
 
                 socket?.outputStream?.write(message.toByteArray())
                 _messages.value += Message(message, isSent = true)
             } catch (e: SecurityException) {
-                _state.value = BluetoothState.Error("Permission denied: ${e.message}")
+                _state.value = BluetoothState.Error("权限被拒绝：${e.message}")
             } catch (e: IOException) {
-                _state.value = BluetoothState.Error("Send error: ${e.message}")
+                _state.value = BluetoothState.Error("发送错误：${e.message}")
             }
         }
     }
@@ -115,13 +115,13 @@ class BluetoothService(
             val buffer = ByteArray(1024)
             while (socket?.isConnected == true) {
                 try {
-                    // Check BLUETOOTH_CONNECT permission for socket operations
+                    // 检查 BLUETOOTH_CONNECT 权限以进行 socket 操作
                     if (ContextCompat.checkSelfPermission(
                             context,
                             "android.permission.BLUETOOTH_CONNECT"
                         ) != android.content.pm.PackageManager.PERMISSION_GRANTED
                     ) {
-                        _state.value = BluetoothState.Error("BLUETOOTH_CONNECT permission missing")
+                        _state.value = BluetoothState.Error("缺少 BLUETOOTH_CONNECT 权限")
                         return@launch
                     }
 
@@ -129,7 +129,7 @@ class BluetoothService(
                     val message = String(buffer, 0, bytes)
                     _messages.value += Message(message, isSent = false)
                 } catch (e: SecurityException) {
-                    _state.value = BluetoothState.Error("Permission denied: ${e.message}")
+                    _state.value = BluetoothState.Error("权限被拒绝：${e.message}")
                     break
                 } catch (e: IOException) {
                     _state.value = BluetoothState.Disconnected
@@ -142,13 +142,13 @@ class BluetoothService(
     // 断开连接
     fun disconnect() {
         try {
-            // Check BLUETOOTH_CONNECT permission for socket operations
+            // 检查 BLUETOOTH_CONNECT 权限以进行 socket 操作
             if (ContextCompat.checkSelfPermission(
                     context,
                     "android.permission.BLUETOOTH_CONNECT"
                 ) != android.content.pm.PackageManager.PERMISSION_GRANTED
             ) {
-                _state.value = BluetoothState.Error("BLUETOOTH_CONNECT permission missing")
+                _state.value = BluetoothState.Error("缺少 BLUETOOTH_CONNECT 权限")
                 return
             }
 
@@ -156,9 +156,9 @@ class BluetoothService(
             serverSocket?.close()
             _state.value = BluetoothState.Disconnected
         } catch (e: SecurityException) {
-            _state.value = BluetoothState.Error("Permission denied: ${e.message}")
+            _state.value = BluetoothState.Error("权限被拒绝：${e.message}")
         } catch (e: IOException) {
-            _state.value = BluetoothState.Error("Disconnect error: ${e.message}")
+            _state.value = BluetoothState.Error("断开连接错误：${e.message}")
         }
     }
 }

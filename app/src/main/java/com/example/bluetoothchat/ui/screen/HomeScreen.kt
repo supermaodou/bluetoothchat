@@ -18,7 +18,7 @@ fun HomeScreen(navController: NavController, viewModel: BluetoothViewModel) {
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Bluetooth Chat") })
+            TopAppBar(title = { Text("蓝牙聊天") })
         }
     ) { padding ->
         Column(
@@ -31,10 +31,10 @@ fun HomeScreen(navController: NavController, viewModel: BluetoothViewModel) {
         ) {
             Text(
                 text = when (state) {
-                    is BluetoothState.Connected -> "Connected to ${(state as BluetoothState.Connected).deviceName}"
-                    is BluetoothState.Listening -> "Listening for connections..."
+                    is BluetoothState.Connected -> "已连接到 ${(state as BluetoothState.Connected).deviceName}"
+                    is BluetoothState.Listening -> "正在监听连接..."
                     is BluetoothState.Error -> (state as BluetoothState.Error).message
-                    else -> "Disconnected"
+                    else -> "未连接"
                 },
                 style = MaterialTheme.typography.bodyLarge
             )
@@ -43,22 +43,22 @@ fun HomeScreen(navController: NavController, viewModel: BluetoothViewModel) {
                 onClick = { navController.navigate("device_list") },
                 enabled = state !is BluetoothState.Connected
             ) {
-                Text("Scan for Devices")
+                Text("扫描设备")
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(
                 onClick = { viewModel.startServer() },
                 enabled = state !is BluetoothState.Connected &&
-                          state !is BluetoothState.Listening
+                        state !is BluetoothState.Listening
             ) {
-                Text("Start Server")
+                Text("启动服务器")
             }
             Spacer(modifier = Modifier.height(8.dp))
             if (state is BluetoothState.Connected) {
                 Button(
                     onClick = { navController.navigate("chat") }
                 ) {
-                    Text("Go to Chat")
+                    Text("进入聊天")
                 }
             }
         }
