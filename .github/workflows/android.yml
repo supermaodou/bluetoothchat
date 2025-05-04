@@ -40,6 +40,7 @@ jobs:
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
+          buildToolsVersion: '33.0.0'  # 指定 build-tools 版本
         
       - name: Create Release
         uses: softprops/action-gh-release@v1
