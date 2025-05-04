@@ -29,9 +29,20 @@ fun ChatScreen(viewModel: BluetoothViewModel) {
     var messageInput by remember { mutableStateOf("") }
 
     Scaffold(
-        topBar = {
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
+        modifier = Modifier.windowInsetsPadding(
+            WindowInsets.navigationBars.only(WindowInsetsSides.Start + WindowInsetsSides.End)
+        ),
+        topBar = @Composable {
             TopAppBar(
-                title = { Text("蓝牙聊天") },
+                title = {
+                    Text(
+                        when (state) {
+                            is BluetoothState.Connected -> (state as BluetoothState.Connected).deviceName
+                            else -> "蓝牙聊天"
+                        }
+                    )
+                },
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = Color.White,
@@ -54,22 +65,8 @@ fun ChatScreen(viewModel: BluetoothViewModel) {
                 .fillMaxSize()
                 .padding(padding)
                 .background(Color(0xFFF1F1F1))
+                .imePadding()  // 添加这个修饰符
         ) {
-            // 状态显示
-            Text(
-                text = when (state) {
-                    is BluetoothState.Connected -> "已连接到 ${(state as BluetoothState.Connected).deviceName}"
-                    is BluetoothState.Error -> (state as BluetoothState.Error).message
-                    else -> "未连接"
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFFE5E5E5))
-                    .padding(8.dp),
-                textAlign = TextAlign.Center,
-                color = Color.Gray
-            )
-
             // 消息列表
             LazyColumn(
                 modifier = Modifier
@@ -115,9 +112,19 @@ fun ChatScreen(viewModel: BluetoothViewModel) {
                     },
                     enabled = messageInput.isNotBlank() && state is BluetoothState.Connected,
                     shape = RoundedCornerShape(8.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        disabledContainerColor = Color(0xFFE0E0E0)
+                    )
                 ) {
-                    Text("发送")
+                    Text(
+                        text = "发送",
+                        color = if (messageInput.isNotBlank() && state is BluetoothState.Connected)
+                            Color.White
+                        else
+                            Color(0xFF9E9E9E)
+                    )
                 }
             }
         }
