@@ -65,7 +65,7 @@ fun ChatScreen(viewModel: BluetoothViewModel) {
                 .fillMaxSize()
                 .padding(padding)
                 .background(Color(0xFFF1F1F1))
-                .imePadding()  // 添加这个修饰符
+                .imePadding()
         ) {
             // 消息列表
             LazyColumn(
