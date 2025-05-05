@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -20,17 +20,17 @@ jobs:
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v2
-        
+
       - name: Install build tools
         run: |
-          sdkmanager "build-tools;33.0.0"
-          
+          sdkmanager "build-tools;33.0.0" "build-tools;29.0.3"
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-        
+
       - name: Build with Gradle
         run: ./gradlew assembleRelease
-        
+
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
         id: sign_app
@@ -40,8 +40,8 @@ jobs:
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
-          buildToolsVersion: '33.0.0'  # 指定 build-tools 版本
-        
+          buildToolsVersion: '29.0.3'  # 使用29.0.3版本，因为sign-android-release这个action可能默认使用这个版本
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
