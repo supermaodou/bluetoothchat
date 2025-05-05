@@ -7,7 +7,7 @@ on:
 #    branches:
 #      - main      # 当推送到main分支时也触发
 #      - develop   # 当推送到develop分支时也触发
-  workflow_dispatch:  # 允许手动触发
+#  workflow_dispatch:  # 允许手动触发
 
 jobs:
   build:
