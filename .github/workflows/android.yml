@@ -23,13 +23,19 @@ jobs:
 
       - name: Install build tools
         run: |
-          sdkmanager "build-tools;33.0.0" "build-tools;29.0.3"
+          sdkmanager "build-tools;33.0.0" "build-tools;30.0.3"
 
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
 
       - name: Build with Gradle
         run: ./gradlew assembleRelease
+
+      # 确保 zipalign 和 apksigner 可执行
+      - name: Make build tools executable
+        run: |
+          chmod +x $ANDROID_SDK_ROOT/build-tools/30.0.3/zipalign
+          chmod +x $ANDROID_SDK_ROOT/build-tools/30.0.3/apksigner
 
       - name: Sign APK
         uses: r0adkll/sign-android-release@v1
@@ -40,7 +46,8 @@ jobs:
           alias: ${{ secrets.KEY_ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
-          buildToolsVersion: '29.0.3'  # 使用29.0.3版本，因为sign-android-release这个action可能默认使用这个版本
+        env:
+          BUILD_TOOLS_VERSION: "30.0.3"
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
